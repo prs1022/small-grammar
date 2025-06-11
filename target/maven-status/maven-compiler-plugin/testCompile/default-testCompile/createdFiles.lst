@@ -1,0 +1,6 @@
+com/grammar/grammar/GrammarParserTest.class
+com/grammar/AppTest.class
+com/grammar/matcher/IntentExtractorTest.class
+com/grammar/api/GrammarControllerTest.class
+com/grammar/core/IntentTest.class
+com/grammar/core/SemanticTest.class
