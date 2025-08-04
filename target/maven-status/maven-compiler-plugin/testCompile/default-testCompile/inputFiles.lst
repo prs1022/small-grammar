@@ -4,4 +4,7 @@
 /Users/upuphone/project_ai/small-grammar/src/test/java/com/grammar/AppTest.java
 /Users/upuphone/project_ai/small-grammar/src/test/java/com/grammar/nlu/SenseNLUParserTest.java
 /Users/upuphone/project_ai/small-grammar/src/test/java/com/grammar/api/GrammarControllerTest.java
+/Users/upuphone/project_ai/small-grammar/src/test/java/com/grammar/nlu/ImprovedFSMNLUEngineTest.java
 /Users/upuphone/project_ai/small-grammar/src/test/java/com/grammar/matcher/IntentExtractorTest.java
+/Users/upuphone/project_ai/small-grammar/src/test/java/com/grammar/nlu/WorkingNLUTest.java
+/Users/upuphone/project_ai/small-grammar/src/test/java/com/grammar/nlu/FSMNLUEngineTest.java

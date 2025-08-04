@@ -1,11 +1,12 @@
 namespace weather;
 
-@type(name="location")
-<location>: ${city|district|poi};
+// Location types - currently simplified
+<location>: "北京" | "上海" | "广州" | "深圳";
 
-@type(name="date_time")
-<date_time>: ${date|time|datetime};
+// Time expressions - currently simplified  
+<date_time>: "今天" | "明天" | "后天";
 
+// Weather query intent with Chinese support
 @attr(intention="weatherSearch")
 @statement
-query_weather: ("查" "询"? | "看" "看"?)? <date_time>? <location>? "的"? "天气" "怎么样"?;
+query_weather: ("查询"? | "看看"?)? <date_time>? <location>? "的"? "天气" "怎么样"?;

@@ -85,7 +85,7 @@
         <version>${antlr.version}</version>
         <configuration>
           <sourceDirectory>antlr</sourceDirectory>
-          <outputDirectory>target/generated-sources/antlr4</outputDirectory>
+          <outputDirectory>src/main/java/com/grammar/antlr</outputDirectory>
           <visitor>true</visitor>
           <listener>true</listener>
           <treatWarningsAsErrors>false</treatWarningsAsErrors>

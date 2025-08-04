@@ -1,0 +1,7 @@
+namespace simple_weather;
+
+<time>: "today" | "tomorrow" | "yesterday";
+
+@attr(intention="WeatherQuery")
+@statement
+weather_query: <time> "weather";

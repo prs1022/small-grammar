@@ -1,0 +1,7 @@
+namespace simple_navigation;
+
+<poi>: "park" | "mall" | "station" | "airport";
+
+@attr(intention="Navigate")
+@statement
+navigate_to: "go" <poi>;

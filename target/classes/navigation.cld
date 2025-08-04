@@ -1,0 +1,9 @@
+namespace navigation;
+
+// Points of interest - mixed Chinese and English
+<poi>: "People's Square" | "Central Park" | "Times Square" | "airport" | "station" | "mall" | "公园" | "商场";
+
+// Navigation intent with multiple language support
+@attr(intention="Navigate")
+@statement
+navigate: ("导航" "到" | "去" | "前往" | "navigate" "to" | "go" "to") <poi>;
