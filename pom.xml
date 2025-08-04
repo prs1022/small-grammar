@@ -86,9 +86,9 @@
         <configuration>
           <sourceDirectory>antlr</sourceDirectory>
           <outputDirectory>target/generated-sources/antlr4</outputDirectory>
-          <package>com.grammar.antlr</package>
           <visitor>true</visitor>
           <listener>true</listener>
+          <treatWarningsAsErrors>false</treatWarningsAsErrors>
         </configuration>
         <executions>
           <execution>

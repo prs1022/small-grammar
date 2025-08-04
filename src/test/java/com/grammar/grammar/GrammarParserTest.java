@@ -1,77 +1,107 @@
 package com.grammar.grammar;
 
-import com.grammar.grammar.GrammarParser;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class GrammarParserTest {
-
+public class GrammarParserTest {
+    
     private GrammarParser grammarParser;
-
+    
     @BeforeEach
     void setUp() {
         grammarParser = new GrammarParser();
     }
-
+    
     @Test
-    @DisplayName("解析简单规则文本")
-    void testParseRule_SimpleRule_ReturnsParseTree() {
-        // Given
-        String ruleText = "namespace test; <greeting>: 'hello' | 'hi';";
-
-        // When
-        ParseTree result = grammarParser.parseRule(ruleText);
-
-        // Then
-        assertNotNull(result, "解析结果不应为null");
-        assertTrue(result.getChildCount() > 0, "解析树应包含子节点");
+    void testParseSimpleGrammar() {
+        String grammar = "namespace test;\n\nproduction: \"hello\" \"world\";";
+        
+        ParseTree tree = grammarParser.parseGrammar(grammar);
+        
+        assertNotNull(tree);
+        assertFalse(grammarParser.hasErrors(), 
+            "Parsing should succeed without errors: " + grammarParser.getErrors());
     }
-
+    
     @Test
-    @DisplayName("解析空字符串")
-    void testParseRule_EmptyString_ReturnsParseTree() {
-        // Given
-        String ruleText = "";
-
-        // When
-        ParseTree result = grammarParser.parseRule(ruleText);
-
-        // Then
-        assertNotNull(result, "即使是空字符串也应返回解析树");
+    void testParseProduction() {
+        String production = "greeting: \"hello\" \"world\";";
+        
+        ParseTree tree = grammarParser.parseProduction(production);
+        
+        assertNotNull(tree);
+        assertFalse(grammarParser.hasErrors());
     }
-
+    
     @Test
-    @DisplayName("解析复杂规则")
-    void testParseRule_ComplexRule_ReturnsParseTree() {
-        // Given
-        String ruleText = "namespace booking;\n" +
-                "import common::time;\n" +
-                "<book_flight>: '我想' ('订' | '预订') '机票' time;";
-
-        // When
-        ParseTree result = grammarParser.parseRule(ruleText);
-
-        // Then
-        assertNotNull(result);
-        assertTrue(result.getChildCount() > 0);
+    void testParsePrime() {
+        String prime = "<word>: \"test\";";
+        
+        ParseTree tree = grammarParser.parsePrime(prime);
+        
+        assertNotNull(tree);
+        assertFalse(grammarParser.hasErrors());
     }
-
+    
     @Test
-    @DisplayName("解析包含注解的规则")
-    void testParseRule_RuleWithAnnotations_ReturnsParseTree() {
-        // Given
-        String ruleText = "namespace test;\n" +
-                "@intent(name=\"greeting\")\n" +
-                "<hello>: 'hello' | 'hi' | '你好';";
-
-        // When
-        ParseTree result = grammarParser.parseRule(ruleText);
-
-        // Then
-        assertNotNull(result);
-        assertTrue(result.getChildCount() > 0);
+    void testParseMacro() {
+        String macro = "repeat(x): x x;";
+        
+        ParseTree tree = grammarParser.parseMacro(macro);
+        
+        assertNotNull(tree);
+        assertFalse(grammarParser.hasErrors());
+    }
+    
+    @Test
+    void testParseExpression() {
+        String expression = "\"hello\" \"world\" | \"hi\" \"there\"";
+        
+        ParseTree tree = grammarParser.parseExpression(expression);
+        
+        assertNotNull(tree);
+        assertFalse(grammarParser.hasErrors());
+    }
+    
+    @Test
+    void testParseCriteria() {
+        String criteria = "@[noun & !plural]";
+        
+        ParseTree tree = grammarParser.parseCriteria(criteria);
+        
+        assertNotNull(tree);
+        assertFalse(grammarParser.hasErrors());
+    }
+    
+    @Test
+    void testErrorHandling() {
+        String invalidGrammar = "invalid syntax here";
+        
+        ParseTree tree = grammarParser.parseGrammar(invalidGrammar);
+        
+        assertTrue(grammarParser.hasErrors());
+        assertFalse(grammarParser.getErrors().isEmpty());
+    }
+    
+    @Test
+    void testValidateSyntax() {
+        String validGrammar = "namespace test;\nproduction: \"valid\" \"syntax\";";
+        
+        String invalidGrammar = "namespace test production invalid";
+        
+        assertTrue(grammarParser.validateSyntax(validGrammar));
+        assertFalse(grammarParser.validateSyntax(invalidGrammar));
+    }
+    
+    @Test
+    void testGetTokens() {
+        String input = "namespace test;";
+        
+        var tokens = grammarParser.getTokens(input);
+        
+        assertNotNull(tokens);
+        assertTrue(tokens.size() > 0);
     }
 }
