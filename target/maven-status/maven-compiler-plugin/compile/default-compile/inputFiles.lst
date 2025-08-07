@@ -1,6 +1,7 @@
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/antlr/gscriptParser.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/nlu/ImprovedFSMNLUEngine.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/nlu/SenseNLUParser.java
+/Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/optimizer/FSMOptimizer.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/core/Lexicon.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/fsm/FSMTransition.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/grammar/GrammarParser.java
@@ -8,7 +9,9 @@
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/nlu/NLUParser.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/matcher/IntentExtractor.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/grammar/ParseTreeAnalyzer.java
+/Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/cache/GrammarCache.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/antlr/gscriptBaseListener.java
+/Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/compiler/IncrementalCompiler.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/compiler/ImprovedCLDCompiler.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/fsm/FSMState.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/core/Slot.java
@@ -39,5 +42,6 @@
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/nlu/Slot.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/core/Intent.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/App.java
+/Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/analyzer/RuleAnalyzer.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/core/EntityMatch.java
 /Users/upuphone/project_ai/small-grammar/src/main/java/com/grammar/antlr/SenseLexer.java

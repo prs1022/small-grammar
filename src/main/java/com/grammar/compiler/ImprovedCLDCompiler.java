@@ -3,36 +3,53 @@ package com.grammar.compiler;
 import com.grammar.fsm.*;
 import com.grammar.grammar.GrammarParser;
 import com.grammar.compiler.SenseGrammarListener.*;
+import com.grammar.cache.GrammarCache;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import java.util.*;
 
 /**
  * Improved CLD compiler that uses the SenseGrammarListener approach
- * to properly parse Sense grammar and build FSMs
+ * to properly parse Sense grammar and build FSMs with caching support
  */
 public class ImprovedCLDCompiler {
     
     private final GrammarParser grammarParser;
+    private final GrammarCache cache;
+    private final ParseTreeWalker walker;
     
     public ImprovedCLDCompiler() {
         this.grammarParser = new GrammarParser();
+        this.cache = new GrammarCache();
+        this.walker = new ParseTreeWalker();
     }
     
     /**
-     * Compile CLD grammar text into multiple FSMs (one per statement)
+     * Compile CLD grammar text into multiple FSMs (one per statement) with caching
      */
     public List<FiniteStateMachine> compile(String grammarText) {
-        ParseTree grammarTree = grammarParser.parseGrammar(grammarText);
+        // Try to get cached listener first
+        SenseGrammarListener cachedListener = cache.getCachedListener(grammarText);
         
-        if (grammarParser.hasErrors()) {
-            throw new RuntimeException("Grammar parsing failed: " + grammarParser.getErrors());
+        SenseGrammarListener listener;
+        if (cachedListener != null) {
+            System.out.println("Using cached grammar listener");
+            listener = cachedListener;
+        } else {
+            // Parse and cache
+            ParseTree grammarTree = parseGrammarWithCache(grammarText);
+            
+            if (grammarParser.hasErrors()) {
+                throw new RuntimeException("Grammar parsing failed: " + grammarParser.getErrors());
+            }
+            
+            // Use listener to extract grammar components
+            listener = new SenseGrammarListener();
+            walker.walk(listener, grammarTree);
+            
+            // Cache the listener for future use
+            cache.cacheListener(grammarText, listener);
         }
-        
-        // Use listener to extract grammar components
-        SenseGrammarListener listener = new SenseGrammarListener();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(listener, grammarTree);
         
         // Build FSMs from statements
         List<FiniteStateMachine> fsms = new ArrayList<>();
@@ -43,6 +60,25 @@ public class ImprovedCLDCompiler {
         }
         
         return fsms;
+    }
+    
+    /**
+     * Parse grammar with caching support
+     */
+    private ParseTree parseGrammarWithCache(String grammarText) {
+        // Try to get cached parse tree
+        ParseTree cachedTree = cache.getCachedParseTree(grammarText);
+        
+        if (cachedTree != null) {
+            System.out.println("Using cached parse tree");
+            return cachedTree;
+        }
+        
+        // Parse and cache
+        ParseTree grammarTree = grammarParser.parseGrammar(grammarText);
+        cache.cacheParseTree(grammarText, grammarTree);
+        
+        return grammarTree;
     }
     
     /**
@@ -231,6 +267,20 @@ public class ImprovedCLDCompiler {
     
     public List<String> getErrors() {
         return grammarParser.getErrors();
+    }
+    
+    /**
+     * Get cache statistics
+     */
+    public GrammarCache.CacheStats getCacheStats() {
+        return cache.getStats();
+    }
+    
+    /**
+     * Clear all caches
+     */
+    public void clearCache() {
+        cache.clearCache();
     }
     
     // Helper class for state counting

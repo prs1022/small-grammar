@@ -49,7 +49,14 @@ public class FiniteStateMachine {
      * Match input text against this FSM
      */
     public NLUResult match(String input) {
-        String[] tokens = tokenize(input);
+        return match(input, detectLanguage(input));
+    }
+    
+    /**
+     * Match input text against this FSM with specified language
+     */
+    public NLUResult match(String input, String language) {
+        String[] tokens = tokenize(input, language);
         List<MatchResult> results = new ArrayList<>();
         
         // Try matching from start state
@@ -84,8 +91,6 @@ public class FiniteStateMachine {
             results.add(new MatchResult(new ArrayList<>(currentSlots), tokenIndex));
         }
         
-        String currentToken = tokens[tokenIndex].toLowerCase();
-        
         // Try all transitions from current state
         for (Map.Entry<String, FSMTransition> entry : currentState.getTransitions().entrySet()) {
             String transitionInput = entry.getKey();
@@ -93,18 +98,25 @@ public class FiniteStateMachine {
             
             boolean canTransition = false;
             List<Slot> newSlots = new ArrayList<>(currentSlots);
+            int tokensConsumed = 0;
             
             switch (transition.getType()) {
                 case LITERAL:
-                    canTransition = transitionInput.toLowerCase().equals(currentToken);
+                    // Try to match the literal string against consecutive tokens
+                    tokensConsumed = matchLiteral(tokens, tokenIndex, transitionInput);
+                    canTransition = tokensConsumed > 0;
                     break;
                     
                 case SLOT:
-                    // Check if token matches any slot value
-                    if (transitionInput.equals(currentToken) || transitionInput.equals("*")) {
-                        canTransition = true;
-                        if (transition.getSlotName() != null) {
-                            newSlots.add(new Slot(transition.getSlotName(), currentToken));
+                    // For slot transitions, try to match against slot values
+                    if (tokenIndex < tokens.length) {
+                        String currentToken = tokens[tokenIndex].toLowerCase();
+                        if (transitionInput.equals(currentToken) || transitionInput.equals("*")) {
+                            canTransition = true;
+                            tokensConsumed = 1;
+                            if (transition.getSlotName() != null) {
+                                newSlots.add(new Slot(transition.getSlotName(), tokens[tokenIndex]));
+                            }
                         }
                     }
                     break;
@@ -115,17 +127,47 @@ public class FiniteStateMachine {
                     continue;
                     
                 case WILDCARD:
-                    canTransition = true;
+                    canTransition = tokenIndex < tokens.length;
+                    tokensConsumed = 1;
                     break;
             }
             
             if (canTransition) {
-                matchRecursive(transition.getTargetState(), tokens, tokenIndex + 1, newSlots, results);
+                matchRecursive(transition.getTargetState(), tokens, tokenIndex + tokensConsumed, newSlots, results);
             } else if (transition.isOptional()) {
                 // Try skipping optional transition
                 matchRecursive(transition.getTargetState(), tokens, tokenIndex, newSlots, results);
             }
         }
+    }
+    
+    /**
+     * Try to match a literal string against consecutive tokens
+     */
+    private int matchLiteral(String[] tokens, int startIndex, String literal) {
+        if (startIndex >= tokens.length) {
+            return 0;
+        }
+        
+        // For Chinese (character-based tokenization), reconstruct the literal from tokens
+        StringBuilder reconstructed = new StringBuilder();
+        int tokensUsed = 0;
+        
+        for (int i = startIndex; i < tokens.length && tokensUsed < literal.length(); i++) {
+            reconstructed.append(tokens[i]);
+            tokensUsed++;
+            
+            if (reconstructed.toString().equals(literal)) {
+                return tokensUsed;
+            }
+        }
+        
+        // If we couldn't reconstruct the exact literal, try direct match for single token
+        if (startIndex < tokens.length && tokens[startIndex].equals(literal)) {
+            return 1;
+        }
+        
+        return 0;
     }
     
     /**
@@ -149,10 +191,31 @@ public class FiniteStateMachine {
     }
     
     /**
-     * Tokenize input text
+     * Tokenize input text based on language
      */
-    private String[] tokenize(String input) {
-        return input.trim().split("\\s+");
+    private String[] tokenize(String input, String language) {
+        input = input.trim();
+        
+        if ("zh".equals(language) || "chinese".equals(language)) {
+            // Chinese: split by characters
+            return input.split("");
+        } else {
+            // English and others: split by whitespace
+            return input.split("\\s+");
+        }
+    }
+    
+    /**
+     * Detect language of input text
+     */
+    private String detectLanguage(String input) {
+        // Simple heuristic: if contains Chinese characters, treat as Chinese
+        for (char c : input.toCharArray()) {
+            if (c >= 0x4E00 && c <= 0x9FFF) { // CJK Unified Ideographs range
+                return "zh";
+            }
+        }
+        return "en";
     }
     
     @Override
